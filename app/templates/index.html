@@ -1,103 +1,155 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SimpleGrant Foundation</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
-  </head>
-  <body>
-    <header class="hero">
-      <nav class="top-nav">
-        <h1>🤝 SimpleGrant Foundation</h1>
-        <button id="themeToggle" aria-label="Toggle theme">🌙</button>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FMJ Organisation | Community Impact Network</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">FMJ Organisation</div>
+      <nav class="topnav">
+        <a href="#mission">Mission</a>
+        <a href="#impact">Impact</a>
+        <a href="#programs">Programs</a>
+        <a href="#get-involved">Get Involved</a>
       </nav>
-      <div class="hero-content">
-        <h2>Direct Financial Support for Individuals</h2>
-        <p>
-          We are a nonprofit organization that awards grants directly to people in need.
-          We do not sell leads or run a grant search marketplace.
-        </p>
+      <button class="btn btn-light" data-tab-target="donate-tab">Donate</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <p class="eyebrow">UNITING COMMUNITIES ACROSS THE U.S.</p>
+        <h1>Building stronger communities through direct support and opportunity.</h1>
+        <p>FMJ Organisation connects families to urgent relief, education support, housing stability resources, and grant opportunities to help people thrive.</p>
+        <div class="hero-actions">
+          <button class="btn" data-tab-target="apply-tab">Apply for Grant</button>
+          <button class="btn btn-outline" data-tab-target="donate-tab">Donate Today</button>
+        </div>
       </div>
-    </header>
-
-    <main class="container">
-      <section class="stats" id="stats"></section>
-
-      <section>
-        <h3>Current Grant Programs</h3>
-        <div id="grantsGrid" class="grants-grid"></div>
-      </section>
-
-      <section class="split">
-        <div class="card">
-          <h3>Eligibility Quick Check</h3>
-          <p>Answer a few questions to estimate whether you may qualify for one of our direct-aid programs.</p>
-          <form id="eligibilityForm">
-            <label>Applicant Type
-              <select name="entity_type">
-                <option value="individual">Individual</option>
-                <option value="caregiver">Caregiver / Parent</option>
-                <option value="student">Student</option>
-                <option value="other">Other</option>
-              </select>
-            </label>
-            <label>Current Need Level
-              <select name="project_stage">
-                <option value="urgent">Urgent</option>
-                <option value="planned">Planned Expense</option>
-                <option value="general">General Support</option>
-              </select>
-            </label>
-            <label>Requested Amount (USD)
-              <input name="budget" type="number" min="0" value="2500" />
-            </label>
-            <label><input name="in_us" type="checkbox" checked /> I currently live in the United States</label>
-            <button type="submit">Check Eligibility</button>
-          </form>
-          <p id="eligibilityResult"></p>
-        </div>
-
-        <div class="card">
-          <h3>Apply / Contact Our Team</h3>
-          <p>Submit your details and our nonprofit grants team will send you the official application steps.</p>
-          <form id="contactForm">
-            <input type="text" name="name" placeholder="Full Name" required />
-            <input type="email" name="email" placeholder="Email" required />
-            <textarea name="message" rows="4" placeholder="Tell us about your situation and grant need..." required></textarea>
-            <button type="submit">Submit Request</button>
-          </form>
-          <p id="contactResult"></p>
-        </div>
-      </section>
-
-      <section class="card">
-        <h3>How Our Grants Work</h3>
-        <ul class="info-list">
-          <li>1) Review our active programs below.</li>
-          <li>2) Complete the quick eligibility check.</li>
-          <li>3) Submit your request to receive full application instructions.</li>
-          <li>4) Our nonprofit board reviews applications and notifies recipients by email.</li>
+      <div class="hero-card">
+        <h3>Community Snapshot</h3>
+        <ul>
+          <li><strong>12,000+</strong> households served in simulation metrics</li>
+          <li><strong>48 states</strong> represented by support requests</li>
+          <li><strong>94%</strong> of approved aid delivered in under 7 days</li>
         </ul>
-      </section>
+      </div>
+    </div>
+  </section>
 
-      <section class="card">
-        <h3>FAQ</h3>
-        <details>
-          <summary>Do you charge any fee to apply?</summary>
-          <p>No. We are a nonprofit organization and never charge application or processing fees.</p>
-        </details>
-        <details>
-          <summary>Is this a grant search directory?</summary>
-          <p>No. This site is for our own direct grant programs for individuals.</p>
-        </details>
-      </section>
-    </main>
+  <main class="container">
+    <section id="mission" class="section">
+      <h2>Our Mission</h2>
+      <p>We improve lives by mobilizing people and resources to advance financial stability, healthy communities, and equitable opportunity for all.</p>
+    </section>
 
-    <footer>
-      <p>SimpleGrant Foundation is a nonprofit organization supporting individuals across the U.S.</p>
-    </footer>
+    <section id="impact" class="section cards-3">
+      <article class="card"><h3>Financial Stability</h3><p>Emergency grants, utility support, and household recovery assistance.</p></article>
+      <article class="card"><h3>Education Access</h3><p>Student grants, caregiver support, and youth enrichment pathways.</p></article>
+      <article class="card"><h3>Health & Wellbeing</h3><p>Critical medical needs and wellness-based aid coordination.</p></article>
+    </section>
 
-    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
-  </body>
+    <section id="programs" class="section">
+      <h2>Featured Programs</h2>
+      <div class="cards-3">
+        <article class="card"><h3>Family Relief Fund</h3><p>Short-term help for urgent hardship situations.</p></article>
+        <article class="card"><h3>Community Recovery Grants</h3><p>Application-based support for local recovery plans.</p></article>
+        <article class="card"><h3>Neighbors Helping Neighbors</h3><p>Donor-funded impact pool supporting vulnerable households.</p></article>
+      </div>
+    </section>
+
+    <section id="get-involved" class="section">
+      <h2>Take Action</h2>
+      <p>Use the tabs below to donate, apply for grant support, monitor your application, or update reviews as an admin in this simulation portal.</p>
+    </section>
+
+    <section class="section tabs-section">
+      <div class="tabs" role="tablist" aria-label="FMJ actions">
+        <button id="donate-tab-btn" class="tab-button active" data-tab="donate-tab" role="tab" aria-selected="true">Donate</button>
+        <button id="apply-tab-btn" class="tab-button" data-tab="apply-tab" role="tab" aria-selected="false">Apply for Grant</button>
+        <button id="monitor-tab-btn" class="tab-button" data-tab="monitor-tab" role="tab" aria-selected="false">Monitor Application</button>
+        <button id="admin-tab-btn" class="tab-button" data-tab="admin-tab" role="tab" aria-selected="false">Admin Review</button>
+      </div>
+
+      <div id="donate-tab" class="tab-panel active" role="tabpanel" aria-labelledby="donate-tab-btn">
+        <h3>Support FMJ Organisation</h3>
+        <form id="donateForm" class="stack form-narrow">
+          <label>Donor Name <input name="donor_name" required></label>
+          <label>Email <input name="email" type="email" required></label>
+          <label>Donation Amount (USD) <input name="amount" type="number" min="1" required></label>
+          <label>Donation Type
+            <select name="donation_type" required>
+              <option value="One-time">One-time</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Emergency Appeal">Emergency Appeal</option>
+            </select>
+          </label>
+          <label>Message (optional) <textarea name="note" rows="3"></textarea></label>
+          <button type="submit" class="btn">Donate Securely</button>
+        </form>
+        <p id="donateResult" class="message"></p>
+      </div>
+
+      <div id="apply-tab" class="tab-panel" role="tabpanel" aria-labelledby="apply-tab-btn">
+        <h3>Apply for Grant</h3>
+        <form id="applyForm" class="stack form-narrow">
+          <label>Full Name <input name="full_name" required></label>
+          <label>Email <input name="email" type="email" required></label>
+          <label>State <input name="state" required placeholder="e.g. Texas"></label>
+          <label>Annual Income (USD) <input name="income" type="number" min="0" required></label>
+          <label>Need Summary <textarea name="need_summary" rows="4" required></textarea></label>
+          <button type="submit" class="btn">Submit Application</button>
+        </form>
+        <p id="applyResult" class="message"></p>
+      </div>
+
+      <div id="monitor-tab" class="tab-panel" role="tabpanel" aria-labelledby="monitor-tab-btn">
+        <h3>Monitor Application</h3>
+        <form id="trackForm" class="stack form-narrow">
+          <label>Application ID <input name="application_id" required placeholder="FMJ-XXXXXXXX"></label>
+          <label>Email <input name="email" type="email" required></label>
+          <button type="submit" class="btn">Check Status</button>
+        </form>
+        <div id="trackResult" class="panel hidden"></div>
+      </div>
+
+      <div id="admin-tab" class="tab-panel" role="tabpanel" aria-labelledby="admin-tab-btn">
+        <h3>Admin Review (Simulation)</h3>
+        <p class="help">Use admin key: <code>FMJ-ADMIN</code></p>
+        <form id="adminForm" class="stack form-narrow">
+          <label>Admin Key <input name="admin_key" required></label>
+          <label>Application ID <input name="application_id" required></label>
+          <label>Status
+            <select name="status">
+              <option>Submitted</option>
+              <option>Under Review</option>
+              <option>Approved</option>
+              <option>Denied</option>
+              <option>Needs More Info</option>
+            </select>
+          </label>
+          <label>Qualified Amount (USD) <input name="qualified_amount" type="number" min="0" value="0"></label>
+          <label>Approved Amount (USD) <input name="approved_amount" type="number" min="0" value="0"></label>
+          <label>Admin Note <textarea name="admin_note" rows="3"></textarea></label>
+          <button type="submit" class="btn">Update Application</button>
+        </form>
+        <p id="adminResult" class="message"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>© FMJ Organisation Simulation Portal</p>
+      <p>For educational and demonstration use.</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
 </html>

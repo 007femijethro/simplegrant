@@ -1,93 +1,142 @@
-const grantsGrid = document.querySelector('#grantsGrid');
-const statsEl = document.querySelector('#stats');
+const donateForm = document.querySelector('#donateForm');
+const applyForm = document.querySelector('#applyForm');
+const trackForm = document.querySelector('#trackForm');
+const adminForm = document.querySelector('#adminForm');
 
-const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+const donateResult = document.querySelector('#donateResult');
+const applyResult = document.querySelector('#applyResult');
+const trackResult = document.querySelector('#trackResult');
+const adminResult = document.querySelector('#adminResult');
 
-function renderStats(data) {
-  statsEl.innerHTML = `
-    <strong>${data.total_grants}</strong> active programs •
-    Typical award range: <strong>${currency.format(data.avg_min_award)}</strong> to <strong>${currency.format(data.avg_max_award)}</strong> •
-    Focus areas: ${data.categories.join(', ')}
-  `;
-}
+const tabButtons = document.querySelectorAll('.tab-button');
+const tabPanels = document.querySelectorAll('.tab-panel');
+const tabTriggerButtons = document.querySelectorAll('[data-tab-target]');
 
-function renderPrograms(grants) {
-  grantsGrid.innerHTML = grants
-    .map((grant) => `
-      <article class="grant-card">
-        <img src="${grant.image}?auto=format&fit=crop&w=900&q=70" alt="${grant.title}" loading="lazy" />
-        <div class="grant-content">
-          <h4>${grant.title}</h4>
-          <p>${grant.description}</p>
-          <p class="grant-meta">Program Area: ${grant.category}</p>
-          <p class="grant-meta">${currency.format(grant.award_min)} - ${currency.format(grant.award_max)} • Apply by ${grant.deadline}</p>
-        </div>
-      </article>
-    `)
-    .join('');
-}
+const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
-async function loadPrograms() {
-  const [grantsRes, statsRes] = await Promise.all([fetch('/api/grants'), fetch('/api/stats')]);
-  const grants = await grantsRes.json();
-  const stats = await statsRes.json();
-  renderPrograms(grants);
-  renderStats(stats);
-}
-
-async function runEligibility(event) {
-  event.preventDefault();
-  const form = event.target;
-  const payload = {
-    entity_type: form.entity_type.value,
-    project_stage: form.project_stage.value,
-    budget: form.budget.value,
-    in_us: form.in_us.checked,
-  };
-  const res = await fetch('/api/eligibility', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+function activateTab(tabId) {
+  tabButtons.forEach((button) => {
+    const isActive = button.dataset.tab === tabId;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-selected', String(isActive));
   });
-  const data = await res.json();
-  document.querySelector('#eligibilityResult').textContent = `Estimated eligibility: ${data.verdict} (${data.score}/100)`;
-}
 
-async function submitContact(event) {
-  event.preventDefault();
-  const form = event.target;
-  const payload = {
-    name: form.name.value,
-    email: form.email.value,
-    message: form.message.value,
-  };
-  const res = await fetch('/api/contact', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  const data = await res.json();
-  document.querySelector('#contactResult').textContent = data.message || data.error;
-  if (data.ok) {
-    form.reset();
-  }
-}
-
-function initTheme() {
-  const theme = localStorage.getItem('theme');
-  if (theme === 'dark') document.body.classList.add('dark');
-  document.querySelector('#themeToggle').addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+  tabPanels.forEach((panel) => {
+    panel.classList.toggle('active', panel.id === tabId);
   });
 }
 
-function init() {
-  initTheme();
-  loadPrograms();
+tabButtons.forEach((button) => {
+  button.addEventListener('click', () => activateTab(button.dataset.tab));
+});
 
-  document.querySelector('#eligibilityForm').addEventListener('submit', runEligibility);
-  document.querySelector('#contactForm').addEventListener('submit', submitContact);
+tabTriggerButtons.forEach((button) => {
+  button.addEventListener('click', () => activateTab(button.dataset.tabTarget));
+});
+
+if (donateForm) {
+  donateForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const payload = Object.fromEntries(new FormData(donateForm).entries());
+    payload.amount = Number(payload.amount || 0);
+
+    const response = await fetch('/api/donate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      donateResult.textContent = data.error || 'Donation failed.';
+      donateResult.className = 'message error';
+      return;
+    }
+
+    donateResult.innerHTML = `Thank you! Donation reference: <strong>${data.donation_id}</strong>.`;
+    donateResult.className = 'message success';
+    donateForm.reset();
+  });
 }
 
-init();
+if (applyForm) {
+  applyForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const payload = Object.fromEntries(new FormData(applyForm).entries());
+    payload.income = Number(payload.income || 0);
+
+    const response = await fetch('/api/apply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      applyResult.textContent = data.error || 'Unable to submit application.';
+      applyResult.className = 'message error';
+      return;
+    }
+
+    applyResult.innerHTML = `Application submitted. Your ID is <strong>${data.application_id}</strong>. Keep it safe.`;
+    applyResult.className = 'message success';
+    applyForm.reset();
+    activateTab('monitor-tab');
+  });
+}
+
+if (trackForm) {
+  trackForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(trackForm);
+    const applicationId = formData.get('application_id');
+    const email = formData.get('email');
+
+    const response = await fetch(`/api/application/${encodeURIComponent(applicationId)}?email=${encodeURIComponent(email)}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      trackResult.classList.remove('hidden');
+      trackResult.innerHTML = `<p class="error">${data.error || 'Application not found.'}</p>`;
+      return;
+    }
+
+    const app = data.application;
+    trackResult.classList.remove('hidden');
+    trackResult.innerHTML = `
+      <h3>${app.full_name} (${app.application_id})</h3>
+      <ul>
+        <li><strong>Status:</strong> ${app.status}</li>
+        <li><strong>Qualified Amount:</strong> ${money.format(app.qualified_amount)}</li>
+        <li><strong>Approved Amount:</strong> ${money.format(app.approved_amount)}</li>
+        <li><strong>Last Updated:</strong> ${new Date(app.updated_at).toLocaleString()}</li>
+      </ul>
+      <p><strong>Admin Note:</strong> ${app.admin_note || 'No note yet.'}</p>
+    `;
+  });
+}
+
+if (adminForm) {
+  adminForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const payload = Object.fromEntries(new FormData(adminForm).entries());
+    payload.qualified_amount = Number(payload.qualified_amount || 0);
+    payload.approved_amount = Number(payload.approved_amount || 0);
+
+    const response = await fetch('/api/admin/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      adminResult.textContent = data.error || 'Update failed.';
+      adminResult.className = 'message error';
+      return;
+    }
+
+    adminResult.textContent = `Updated ${data.application.application_id} successfully.`;
+    adminResult.className = 'message success';
+  });
+}
