@@ -4,12 +4,15 @@ const trackForm = document.querySelector('#trackForm');
 const adminForm = document.querySelector('#adminForm');
 const adminLoginForm = document.querySelector('#adminLoginForm');
 const adminLogoutBtn = document.querySelector('#adminLogoutBtn');
+const testimonialForm = document.querySelector('#testimonialForm');
 
 const donateResult = document.querySelector('#donateResult');
 const applyResult = document.querySelector('#applyResult');
 const trackResult = document.querySelector('#trackResult');
 const adminResult = document.querySelector('#adminResult');
 const adminLoginResult = document.querySelector('#adminLoginResult');
+const testimonialResult = document.querySelector('#testimonialResult');
+const testimonialAdminList = document.querySelector('#testimonialAdminList');
 
 const modalOpenButtons = document.querySelectorAll('[data-modal-open]');
 const modalCloseButtons = document.querySelectorAll('[data-modal-close]');
@@ -21,6 +24,7 @@ const heroSection = document.querySelector('.hero');
 const countUpElements = document.querySelectorAll('.count-up');
 
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+let testimonialCache = [];
 
 function openModal(modalId) {
   const modal = document.getElementById(modalId);
@@ -33,6 +37,13 @@ function openModal(modalId) {
 function closeModals() {
   modals.forEach((modal) => modal.classList.add('hidden'));
   document.body.classList.remove('modal-open');
+
+  if (photoModalImage) {
+    photoModalImage.src = '';
+  }
+  if (photoModalCaption) {
+    photoModalCaption.textContent = '';
+  }
 }
 
 modalOpenButtons.forEach((button) => {
@@ -261,6 +272,43 @@ if (adminForm) {
 
     adminResult.textContent = `Updated ${data.application.application_id} successfully.`;
     adminResult.className = 'message success';
+  });
+}
+
+if (testimonialForm) {
+  loadAdminTestimonials();
+
+  testimonialForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(testimonialForm);
+    const payload = {
+      id: formData.get('id') ? Number(formData.get('id')) : null,
+      full_name: String(formData.get('full_name') || '').trim(),
+      role_title: String(formData.get('role_title') || '').trim(),
+      location: String(formData.get('location') || '').trim(),
+      quote: String(formData.get('quote') || '').trim(),
+      is_featured: formData.get('is_featured') === 'on',
+    };
+
+    const response = await fetch('/api/admin/testimonials', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      testimonialResult.textContent = data.error || 'Unable to save testimonial.';
+      testimonialResult.className = 'message error';
+      return;
+    }
+
+    testimonialResult.textContent = `Saved testimonial for ${data.testimonial.full_name}.`;
+    testimonialResult.className = 'message success';
+    testimonialForm.reset();
+    testimonialForm.elements.id.value = '';
+    testimonialForm.elements.is_featured.checked = true;
+    await loadAdminTestimonials();
   });
 }
 
