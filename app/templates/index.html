@@ -14,7 +14,9 @@
         <a href="#mission">Mission</a>
         <a href="#impact">Impact</a>
         <a href="#programs">Programs</a>
-        <a href="#community-partners">Partners</a>
+        <a href="#community-stories">Stories</a>
+        <a href="#photo-wall">Photo Wall</a>
+        <a href="#testimonials">Testimonials</a>
         <a href="#get-involved">Get Involved</a>
         <a href="/admin">Admin</a>
       </nav>
@@ -36,9 +38,9 @@
       <div class="hero-card">
         <h3>Community Snapshot</h3>
         <ul>
-          <li><strong>12,000+</strong> households served in simulation metrics</li>
-          <li><strong>48 states</strong> represented by support requests</li>
-          <li><strong>94%</strong> of approved aid delivered in under 7 days</li>
+          <li><strong class="count-up" data-target="12000">0</strong> households served in simulation metrics</li>
+          <li><strong class="count-up" data-target="48">0</strong> states represented by support requests</li>
+          <li><strong class="count-up" data-target="94" data-suffix="%">0%</strong> of approved aid delivered in under 7 days</li>
         </ul>
       </div>
     </div>
@@ -65,23 +67,63 @@
       </div>
     </section>
 
-    <section id="community-partners" class="section spotlight">
-      <div class="spotlight-copy">
-        <h2>Community Leadership Spotlight</h2>
-        <p>
-          We continue learning from nationwide organizations like
-          <a href="https://www.unitedway.org/" target="_blank" rel="noopener noreferrer">United Way</a>,
-          whose mission is to improve lives by mobilizing the caring power of communities around the world.
-        </p>
-        <p>
-          United Way's focus on youth opportunity, healthy community, financial security, and community resilience
-          reflects the same values we apply in every grant cycle and local support program.
-        </p>
+    <section id="community-stories" class="section">
+      <h2>Community Stories</h2>
+      <p class="section-lead">Real moments from community support events, volunteer outreach, and family resource days.</p>
+      <div class="story-gallery">
+        <figure class="story-card card active" data-story="0">
+          <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=80" alt="Volunteers handing out food boxes in a community event">
+          <figcaption>Volunteer day distribution with local partners.</figcaption>
+        </figure>
+        <figure class="story-card card" data-story="1">
+          <img src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=1200&q=80" alt="Mentor helping a student with school materials">
+          <figcaption>Education support and mentorship in action.</figcaption>
+        </figure>
+        <figure class="story-card card" data-story="2">
+          <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=1200&q=80" alt="Community wellness clinic consultation">
+          <figcaption>Health and wellness outreach for families.</figcaption>
+        </figure>
       </div>
-      <figure class="spotlight-image card">
-        <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google logo">
-        <figcaption>Visual inspiration powered by Google imagery for a more engaging community portal.</figcaption>
-      </figure>
+      <div class="story-controls" role="tablist" aria-label="Community story selector">
+        <button class="story-dot active" type="button" data-story-target="0" aria-label="Show story 1"></button>
+        <button class="story-dot" type="button" data-story-target="1" aria-label="Show story 2"></button>
+        <button class="story-dot" type="button" data-story-target="2" aria-label="Show story 3"></button>
+      </div>
+    </section>
+
+    <section id="photo-wall" class="section">
+      <h2>Impact Photo Wall</h2>
+      <p class="section-lead">Tap any image to view a larger story moment.</p>
+      <div class="photo-grid">
+        <button class="photo-tile" type="button" data-photo-open data-photo-src="https://images.unsplash.com/photo-1469571486292-b53601010376?auto=format&fit=crop&w=1400&q=80" data-photo-caption="Neighborhood outreach team connecting with local families.">
+          <img src="https://images.unsplash.com/photo-1469571486292-b53601010376?auto=format&fit=crop&w=700&q=80" alt="Volunteers speaking with community members in a neighborhood">
+        </button>
+        <button class="photo-tile" type="button" data-photo-open data-photo-src="https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=1400&q=80" data-photo-caption="Youth learning lab session and after-school support.">
+          <img src="https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=700&q=80" alt="Children and mentor studying at a table">
+        </button>
+        <button class="photo-tile" type="button" data-photo-open data-photo-src="https://images.unsplash.com/photo-1593113630400-ea4288922497?auto=format&fit=crop&w=1400&q=80" data-photo-caption="Emergency food and supplies distribution day.">
+          <img src="https://images.unsplash.com/photo-1593113630400-ea4288922497?auto=format&fit=crop&w=700&q=80" alt="Community volunteers distributing food">
+        </button>
+        <button class="photo-tile" type="button" data-photo-open data-photo-src="https://images.unsplash.com/photo-1459183885421-5cc683b8dbba?auto=format&fit=crop&w=1400&q=80" data-photo-caption="One-on-one financial coaching for families.">
+          <img src="https://images.unsplash.com/photo-1459183885421-5cc683b8dbba?auto=format&fit=crop&w=700&q=80" alt="Advisor discussing paperwork with community member">
+        </button>
+        <button class="photo-tile" type="button" data-photo-open data-photo-src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=1400&q=80" data-photo-caption="Community celebration after grant milestone achievements.">
+          <img src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=700&q=80" alt="Group of people celebrating outdoors together">
+        </button>
+        <button class="photo-tile" type="button" data-photo-open data-photo-src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=80" data-photo-caption="Volunteer check-in and event coordination at a local center.">
+          <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=700&q=80" alt="Volunteers smiling together during an event">
+        </button>
+      </div>
+    </section>
+
+
+    <section id="testimonials" class="section">
+      <div class="testimonial-header">
+        <h2>Testimonials</h2>
+        <p class="section-lead">Stories from families, volunteers, and partners supported by FMJ programs.</p>
+      </div>
+      <div id="testimonialTabs" class="testimonial-tabs" role="tablist" aria-label="Testimonial tabs"></div>
+      <div id="testimonialCards" class="cards-3"></div>
     </section>
 
     <section id="get-involved" class="section">
@@ -184,6 +226,15 @@
         <button type="submit" class="btn">Submit Application</button>
       </form>
       <p id="applyResult" class="message"></p>
+    </div>
+  </div>
+
+  <div id="photo-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="photo-modal-title">
+    <div class="modal-card photo-modal-card">
+      <button class="modal-close" data-modal-close>&times;</button>
+      <h3 id="photo-modal-title">Community Moment</h3>
+      <img id="photo-modal-image" src="" alt="Expanded community moment">
+      <p id="photo-modal-caption" class="message"></p>
     </div>
   </div>
 

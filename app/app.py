@@ -63,6 +63,18 @@ class GAdminUser(db.Model):
     password: Mapped[str] = mapped_column(String(120), nullable=False)
 
 
+class GTestimonial(db.Model):
+    __tablename__ = "g_testimonials"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    full_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    role_title: Mapped[str] = mapped_column(String(160), nullable=False)
+    location: Mapped[str] = mapped_column(String(160), nullable=False)
+    quote: Mapped[str] = mapped_column(Text, nullable=False)
+    is_featured: Mapped[bool] = mapped_column(nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(nullable=False)
+
 
 def create_app() -> Flask:
     app = Flask(__name__)
@@ -76,6 +88,7 @@ def create_app() -> Flask:
     with app.app_context():
         db.create_all()
         _seed_admin_user()
+        _seed_testimonials()
 
     @app.get("/")
     def index() -> str:
@@ -86,6 +99,16 @@ def create_app() -> Flask:
         if not session.get("admin_authenticated"):
             return render_template("admin_login.html")
         return render_template("admin_dashboard.html")
+
+    @app.get("/api/testimonials")
+    def get_testimonials() -> Any:
+        testimonials = (
+            GTestimonial.query.filter_by(is_featured=True)
+            .order_by(GTestimonial.updated_at.desc())
+            .limit(12)
+            .all()
+        )
+        return jsonify({"ok": True, "testimonials": [_serialize_testimonial(t) for t in testimonials]})
 
     @app.post("/api/admin/login")
     def admin_login() -> Any:
@@ -105,6 +128,47 @@ def create_app() -> Flask:
     def admin_logout() -> Any:
         session.clear()
         return jsonify({"ok": True})
+
+    @app.get("/api/admin/testimonials")
+    def admin_get_testimonials() -> Any:
+        if not session.get("admin_authenticated"):
+            return jsonify({"ok": False, "error": "Unauthorized."}), 401
+
+        testimonials = GTestimonial.query.order_by(GTestimonial.updated_at.desc()).all()
+        return jsonify({"ok": True, "testimonials": [_serialize_testimonial(t) for t in testimonials]})
+
+    @app.post("/api/admin/testimonials")
+    def admin_upsert_testimonial() -> Any:
+        if not session.get("admin_authenticated"):
+            return jsonify({"ok": False, "error": "Unauthorized."}), 401
+
+        payload = request.get_json(silent=True) or {}
+        testimonial_id = payload.get("id")
+
+        required_fields = ["full_name", "role_title", "location", "quote"]
+        missing = [field for field in required_fields if not str(payload.get(field, "")).strip()]
+        if missing:
+            return jsonify({"ok": False, "error": f"Missing fields: {', '.join(missing)}"}), 400
+
+        now = datetime.now(timezone.utc)
+
+        if testimonial_id:
+            testimonial = GTestimonial.query.filter_by(id=int(testimonial_id)).first()
+            if not testimonial:
+                return jsonify({"ok": False, "error": "Testimonial not found."}), 404
+        else:
+            testimonial = GTestimonial(created_at=now, updated_at=now)
+            db.session.add(testimonial)
+
+        testimonial.full_name = str(payload["full_name"]).strip()
+        testimonial.role_title = str(payload["role_title"]).strip()
+        testimonial.location = str(payload["location"]).strip()
+        testimonial.quote = str(payload["quote"]).strip()
+        testimonial.is_featured = bool(payload.get("is_featured", True))
+        testimonial.updated_at = now
+
+        db.session.commit()
+        return jsonify({"ok": True, "testimonial": _serialize_testimonial(testimonial)})
 
     @app.post("/api/apply")
     def apply_for_grant() -> Any:
@@ -212,11 +276,72 @@ def _serialize_application(application: GApplicant) -> dict[str, Any]:
     }
 
 
+def _serialize_testimonial(testimonial: GTestimonial) -> dict[str, Any]:
+    return {
+        "id": testimonial.id,
+        "full_name": testimonial.full_name,
+        "role_title": testimonial.role_title,
+        "location": testimonial.location,
+        "quote": testimonial.quote,
+        "is_featured": testimonial.is_featured,
+        "created_at": testimonial.created_at.isoformat(),
+        "updated_at": testimonial.updated_at.isoformat(),
+    }
+
+
 def _seed_admin_user() -> None:
     admin = GAdminUser.query.filter_by(username="admin").first()
     if not admin:
         db.session.add(GAdminUser(username="admin", password="Jethro01"))
         db.session.commit()
+
+
+def _seed_testimonials() -> None:
+    if GTestimonial.query.count() > 0:
+        return
+
+    now = datetime.now(timezone.utc)
+    samples = [
+        {
+            "full_name": "Aisha Thompson",
+            "role_title": "Single Parent & Grant Recipient",
+            "location": "Houston, Texas",
+            "quote": "FMJ support helped me keep my apartment and cover school supplies for my children during a difficult transition.",
+        },
+        {
+            "full_name": "Michael Rivera",
+            "role_title": "Community Volunteer",
+            "location": "Phoenix, Arizona",
+            "quote": "The recovery grants gave our neighborhood center enough momentum to reopen services faster than expected.",
+        },
+        {
+            "full_name": "Janelle Brooks",
+            "role_title": "Youth Program Participant",
+            "location": "Atlanta, Georgia",
+            "quote": "I received technology support and mentorship that helped me stay in school and complete my certification goals.",
+        },
+        {
+            "full_name": "David Chen",
+            "role_title": "Local Partner Organization Lead",
+            "location": "Seattle, Washington",
+            "quote": "FMJ collaborates with partners in a way that respects local needs and gets real resources to families quickly.",
+        },
+    ]
+
+    for sample in samples:
+        db.session.add(
+            GTestimonial(
+                full_name=sample["full_name"],
+                role_title=sample["role_title"],
+                location=sample["location"],
+                quote=sample["quote"],
+                is_featured=True,
+                created_at=now,
+                updated_at=now,
+            )
+        )
+
+    db.session.commit()
 
 
 if __name__ == "__main__":

@@ -12,23 +12,44 @@
       <h1>Admin Review</h1>
       <button id="adminLogoutBtn" class="btn btn-light">Logout</button>
     </div>
-    <form id="adminForm" class="stack form-narrow">
-      <label>Application ID <input name="application_id" required></label>
-      <label>Status
-        <select name="status">
-          <option>Submitted</option>
-          <option>Under Review</option>
-          <option>Approved</option>
-          <option>Denied</option>
-          <option>Needs More Info</option>
-        </select>
-      </label>
-      <label>Qualified Amount (USD) <input name="qualified_amount" type="number" min="0" value="0"></label>
-      <label>Approved Amount (USD) <input name="approved_amount" type="number" min="0" value="0"></label>
-      <label>Admin Note <textarea name="admin_note" rows="3"></textarea></label>
-      <button type="submit" class="btn">Update Application</button>
-    </form>
-    <p id="adminResult" class="message"></p>
+
+    <section class="section admin-split">
+      <div>
+        <h2>Application Updates</h2>
+        <form id="adminForm" class="stack form-narrow">
+          <label>Application ID <input name="application_id" required></label>
+          <label>Status
+            <select name="status">
+              <option>Submitted</option>
+              <option>Under Review</option>
+              <option>Approved</option>
+              <option>Denied</option>
+              <option>Needs More Info</option>
+            </select>
+          </label>
+          <label>Qualified Amount (USD) <input name="qualified_amount" type="number" min="0" value="0"></label>
+          <label>Approved Amount (USD) <input name="approved_amount" type="number" min="0" value="0"></label>
+          <label>Admin Note <textarea name="admin_note" rows="3"></textarea></label>
+          <button type="submit" class="btn">Update Application</button>
+        </form>
+        <p id="adminResult" class="message"></p>
+      </div>
+
+      <div>
+        <h2>Testimonials (Database)</h2>
+        <form id="testimonialForm" class="stack form-narrow">
+          <input type="hidden" name="id">
+          <label>Full Name <input name="full_name" required></label>
+          <label>Role / Title <input name="role_title" required></label>
+          <label>Location <input name="location" required></label>
+          <label>Quote <textarea name="quote" rows="4" required></textarea></label>
+          <label><input type="checkbox" name="is_featured" checked> Show on homepage</label>
+          <button type="submit" class="btn">Save Testimonial</button>
+        </form>
+        <p id="testimonialResult" class="message"></p>
+        <div id="testimonialAdminList" class="panel"></div>
+      </div>
+    </section>
   </main>
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>

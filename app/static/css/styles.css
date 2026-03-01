@@ -23,7 +23,12 @@ body.modal-open { overflow: hidden; }
 .topnav a { color: var(--text); text-decoration: none; font-weight: 600; }
 .topnav a:hover { color: var(--primary); }
 
-.hero { background: linear-gradient(135deg, #0a2f7d, #0e53cf); color: white; padding: 3.2rem 0; }
+.hero {
+  background: linear-gradient(135deg, #0a2f7d, #0e53cf);
+  color: white;
+  padding: 3.2rem 0;
+  transition: background 700ms ease;
+}
 .hero-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 1.2rem; align-items: center; }
 .hero h1 { font-size: clamp(1.7rem, 2.8vw, 3rem); line-height: 1.2; margin: 0.4rem 0 0.8rem; }
 .eyebrow { letter-spacing: 0.08em; font-weight: 700; font-size: 0.8rem; color: #c9dbff; margin: 0; }
@@ -33,37 +38,158 @@ body.modal-open { overflow: hidden; }
 
 .section { padding: 2rem 0; }
 .section h2 { margin-top: 0; }
+.section-lead { color: var(--muted); margin-top: -0.3rem; }
 .cards-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; box-shadow: 0 5px 20px rgba(10, 30, 80, 0.06); }
 
-.spotlight {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 1rem;
-  align-items: stretch;
+.story-gallery {
+  position: relative;
+  min-height: 420px;
 }
 
-.spotlight-copy a {
-  color: var(--primary);
-  font-weight: 700;
-}
-
-.spotlight-image {
+.story-card {
   margin: 0;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 450ms ease, transform 450ms ease;
+  padding: 0.5rem;
+}
+
+.story-card.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.story-card img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 9px;
+}
+
+.story-card figcaption {
+  color: var(--muted);
+  padding: 0.65rem 0.2rem 0;
+  font-weight: 600;
+}
+
+.story-controls {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.story-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 99px;
+  border: 1px solid #9eb8ef;
+  background: #d8e6ff;
+  padding: 0;
+  cursor: pointer;
+}
+
+.story-dot.active {
+  background: var(--primary);
+  border-color: var(--primary-deep);
+}
+
+
+.photo-grid {
   display: grid;
-  gap: 0.75rem;
-  align-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.8rem;
 }
 
-.spotlight-image img {
-  max-width: 100%;
-  height: auto;
-  object-fit: contain;
+.photo-tile {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 5px 20px rgba(10, 30, 80, 0.08);
+  transition: transform 220ms ease, box-shadow 220ms ease;
 }
 
-.spotlight-image figcaption {
+.photo-tile:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 10px 24px rgba(10, 30, 80, 0.18);
+}
+
+.photo-tile img {
+  width: 100%;
+  height: 190px;
+  display: block;
+  object-fit: cover;
+}
+
+.photo-modal-card {
+  width: min(860px, 96vw);
+}
+
+#photo-modal-image {
+  width: 100%;
+  max-height: 68vh;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+
+.testimonial-header {
+  margin-bottom: 0.5rem;
+}
+
+.testimonial-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.6rem 0 1rem;
+}
+
+.testimonial-tab {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.testimonial-tab.active {
+  background: var(--primary);
+  border-color: var(--primary-deep);
+  color: #fff;
+}
+
+.testimonial-card .quote {
+  color: var(--text);
+  font-style: italic;
+}
+
+.testimonial-card .meta {
   color: var(--muted);
   font-size: 0.9rem;
+  margin-top: 0.55rem;
+}
+
+.admin-split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.4rem;
+}
+
+#testimonialAdminList ul {
+  margin: 0;
+  padding-left: 1.05rem;
+}
+
+#testimonialAdminList li {
+  margin-bottom: 0.5rem;
 }
 
 .stack { display: grid; gap: 0.75rem; }
@@ -146,6 +272,8 @@ input, select, textarea { border: 1px solid var(--border); padding: 0.6rem; }
 
 @media (max-width: 900px) {
   .hero-grid { grid-template-columns: 1fr; }
-  .spotlight { grid-template-columns: 1fr; }
   .topbar-inner { flex-direction: column; align-items: flex-start; }
+  .story-gallery { min-height: 380px; }
+  .story-card img { height: 260px; }
+  .photo-tile img { height: 165px; }
 }

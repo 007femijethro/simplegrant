@@ -15,6 +15,7 @@ The app auto-creates these tables on startup (all `g_` prefixed):
 - `g_applicants`
 - `g_donations`
 - `g_admin_users`
+- `g_testimonials`
 
 A default admin user is seeded automatically:
 - Username: `admin`
@@ -24,6 +25,7 @@ A default admin user is seeded automatically:
 - Modal popup forms for **Apply for Grant** and **Donate Today** actions.
 - Application tracking by application ID + email.
 - Dedicated `/admin` route with login and authenticated application review/update actions.
+- Homepage testimonial tab fed from database with admin create/edit workflow.
 
 ## APIs
 - `POST /api/donate` — submit a donation record.
@@ -32,6 +34,9 @@ A default admin user is seeded automatically:
 - `POST /api/admin/login` — admin login.
 - `POST /api/admin/update` — update application review fields (authenticated session).
 - `POST /api/admin/logout` — admin logout.
+- `GET /api/testimonials` — list featured testimonials for homepage.
+- `GET /api/admin/testimonials` — list all testimonials (admin session required).
+- `POST /api/admin/testimonials` — create or update testimonial (admin session required).
 
 ## Run locally
 ```bash
