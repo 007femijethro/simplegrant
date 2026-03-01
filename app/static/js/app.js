@@ -22,12 +22,6 @@ const storyCards = document.querySelectorAll('.story-card');
 const storyDots = document.querySelectorAll('.story-dot');
 const heroSection = document.querySelector('.hero');
 const countUpElements = document.querySelectorAll('.count-up');
-const photoOpenButtons = document.querySelectorAll('[data-photo-open]');
-const photoModalImage = document.querySelector('#photo-modal-image');
-const photoModalCaption = document.querySelector('#photo-modal-caption');
-
-const testimonialTabs = document.querySelector('#testimonialTabs');
-const testimonialCards = document.querySelector('#testimonialCards');
 
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 let testimonialCache = [];
@@ -133,144 +127,6 @@ function initializeStoryCarousel() {
     currentStory = (currentStory + 1) % storyCards.length;
     setActiveStory(currentStory);
   }, 5000);
-}
-
-function initializePhotoWall() {
-  if (!photoOpenButtons.length || !photoModalImage || !photoModalCaption) {
-    return;
-  }
-
-  photoOpenButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      const src = button.dataset.photoSrc || '';
-      const caption = button.dataset.photoCaption || '';
-
-      photoModalImage.src = src;
-      photoModalCaption.textContent = caption;
-      openModal('photo-modal');
-    });
-  });
-}
-
-function renderTestimonialCards(items) {
-  if (!testimonialCards) {
-    return;
-  }
-
-  if (!items.length) {
-    testimonialCards.innerHTML = '<article class="card"><p class="help">No testimonials are currently available.</p></article>';
-    return;
-  }
-
-  testimonialCards.innerHTML = items.map((item) => `
-    <article class="card testimonial-card">
-      <p class="quote">“${item.quote}”</p>
-      <p><strong>${item.full_name}</strong></p>
-      <p class="meta">${item.role_title} • ${item.location}</p>
-    </article>
-  `).join('');
-}
-
-function renderTestimonialTabs(items) {
-  if (!testimonialTabs) {
-    return;
-  }
-
-  testimonialTabs.innerHTML = '';
-
-  const allButton = document.createElement('button');
-  allButton.type = 'button';
-  allButton.className = 'testimonial-tab active';
-  allButton.textContent = 'All';
-  allButton.addEventListener('click', () => {
-    testimonialTabs.querySelectorAll('.testimonial-tab').forEach((tab) => tab.classList.remove('active'));
-    allButton.classList.add('active');
-    renderTestimonialCards(testimonialCache);
-  });
-  testimonialTabs.appendChild(allButton);
-
-  items.forEach((item) => {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'testimonial-tab';
-    button.textContent = item.full_name;
-    button.addEventListener('click', () => {
-      testimonialTabs.querySelectorAll('.testimonial-tab').forEach((tab) => tab.classList.remove('active'));
-      button.classList.add('active');
-      renderTestimonialCards([item]);
-    });
-    testimonialTabs.appendChild(button);
-  });
-}
-
-async function loadTestimonials() {
-  if (!testimonialTabs || !testimonialCards) {
-    return;
-  }
-
-  const response = await fetch('/api/testimonials');
-  const data = await response.json();
-
-  if (!response.ok) {
-    renderTestimonialCards([]);
-    return;
-  }
-
-  testimonialCache = data.testimonials || [];
-  renderTestimonialTabs(testimonialCache);
-  renderTestimonialCards(testimonialCache);
-}
-
-function renderAdminTestimonials(items) {
-  if (!testimonialAdminList) {
-    return;
-  }
-
-  if (!items.length) {
-    testimonialAdminList.innerHTML = '<p class="help">No testimonials found in database.</p>';
-    return;
-  }
-
-  testimonialAdminList.innerHTML = `
-    <h3>Saved Testimonials</h3>
-    <ul>
-      ${items.map((item) => `<li><button type="button" class="btn btn-light" data-testimonial-edit="${item.id}">Edit</button> <strong>${item.full_name}</strong> — ${item.role_title} (${item.location})</li>`).join('')}
-    </ul>
-  `;
-
-  testimonialAdminList.querySelectorAll('[data-testimonial-edit]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const id = Number(button.dataset.testimonialEdit || 0);
-      const item = testimonialCache.find((entry) => entry.id === id);
-      if (!item || !testimonialForm) {
-        return;
-      }
-
-      testimonialForm.elements.id.value = String(item.id);
-      testimonialForm.elements.full_name.value = item.full_name;
-      testimonialForm.elements.role_title.value = item.role_title;
-      testimonialForm.elements.location.value = item.location;
-      testimonialForm.elements.quote.value = item.quote;
-      testimonialForm.elements.is_featured.checked = Boolean(item.is_featured);
-    });
-  });
-}
-
-async function loadAdminTestimonials() {
-  if (!testimonialAdminList) {
-    return;
-  }
-
-  const response = await fetch('/api/admin/testimonials');
-  const data = await response.json();
-
-  if (!response.ok) {
-    testimonialAdminList.innerHTML = `<p class="error">${data.error || 'Unable to load testimonials.'}</p>`;
-    return;
-  }
-
-  testimonialCache = data.testimonials || [];
-  renderAdminTestimonials(testimonialCache);
 }
 
 if (donateForm) {
@@ -465,5 +321,3 @@ if (adminLogoutBtn) {
 
 animateCounters();
 initializeStoryCarousel();
-initializePhotoWall();
-loadTestimonials();
