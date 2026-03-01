@@ -104,3 +104,11 @@ footer {
   text-align: center;
   padding: 1rem;
 }
+
+.hero-content { max-width: 760px; }
+
+.info-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  line-height: 1.7;
+}
