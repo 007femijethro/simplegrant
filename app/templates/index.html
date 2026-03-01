@@ -102,11 +102,65 @@
       <button class="modal-close" data-modal-close>&times;</button>
       <h3 id="apply-title">Apply for Grant</h3>
       <form id="applyForm" class="stack form-narrow">
-        <label>Full Name <input name="full_name" required></label>
-        <label>Email <input name="email" type="email" required></label>
-        <label>State <input name="state" required placeholder="e.g. Texas"></label>
-        <label>Annual Income (USD) <input name="income" type="number" min="0" required></label>
-        <label>Need Summary <textarea name="need_summary" rows="4" required></textarea></label>
+        <p class="help">⚠️ Real foundations will never ask for payment to apply.</p>
+
+        <section class="form-section stack">
+          <h4>🧾 Core Application Questions</h4>
+          <label>Full Legal Name <input name="full_name" required></label>
+          <div class="inline-grid">
+            <label>Date of Birth <input name="date_of_birth" type="date"></label>
+            <label>Phone Number <input name="phone_number" type="tel"></label>
+          </div>
+          <label>Email Address <input name="email" type="email" required></label>
+          <label>Address (City, State, Country) <input name="address" placeholder="City, State, Country"></label>
+          <div class="inline-grid">
+            <label>Citizenship / Residency Status <input name="residency_status" placeholder="e.g. U.S. Citizen"></label>
+            <label>State <input name="state" required placeholder="e.g. Texas"></label>
+          </div>
+          <label>Social Security Number (optional) <input name="ssn_last4" placeholder="Last 4 digits only"></label>
+        </section>
+
+        <section class="form-section stack">
+          <h4>🟣 Eligibility Questions</h4>
+          <div class="inline-grid">
+            <label>Are you currently enrolled in school?
+              <select name="enrolled_in_school"><option value="">Select</option><option>Yes</option><option>No</option></select>
+            </label>
+            <label>Are you employed?
+              <select name="employed"><option value="">Select</option><option>Yes</option><option>No</option></select>
+            </label>
+          </div>
+          <div class="inline-grid">
+            <label>Annual Household Income (USD) <input name="income" type="number" min="0" required></label>
+            <label>Do you meet the income threshold?
+              <select name="income_threshold"><option value="">Select</option><option>Yes</option><option>No</option></select>
+            </label>
+          </div>
+          <label>Are you from an underserved community?
+            <select name="underserved_community"><option value="">Select</option><option>Yes</option><option>No</option></select>
+          </label>
+        </section>
+
+        <section class="form-section stack">
+          <h4>🟣 Purpose, Narrative, and Budget</h4>
+          <label>What will you use this funding for? <textarea name="funding_purpose" rows="3" required></textarea></label>
+          <label>Describe a challenge you have overcome / personal statement <textarea name="personal_statement" rows="4"></textarea></label>
+          <label>Total amount requested (USD) <input name="amount_requested" type="number" min="0"></label>
+          <label>Provide a budget breakdown <textarea name="budget_breakdown" rows="3" placeholder="Tuition, rent, equipment, medical, etc."></textarea></label>
+          <label>What outcomes do you expect? <textarea name="impact_outcomes" rows="3" placeholder="What success will look like."></textarea></label>
+          <label>Explain your current financial hardship <textarea name="financial_hardship" rows="3"></textarea></label>
+        </section>
+
+        <section class="form-section stack">
+          <h4>🟣 Supporting Documents (optional upload checklist)</h4>
+          <label><input type="checkbox" name="docs" value="Resume/CV"> Resume or CV</label>
+          <label><input type="checkbox" name="docs" value="Transcript"> Transcript</label>
+          <label><input type="checkbox" name="docs" value="Business plan"> Business plan</label>
+          <label><input type="checkbox" name="docs" value="Recommendation letters"> Letters of recommendation</label>
+          <label><input type="checkbox" name="docs" value="Tax return"> Tax return</label>
+          <label><input type="checkbox" name="docs" value="Proof of acceptance"> Proof of acceptance</label>
+        </section>
+
         <button type="submit" class="btn">Submit Application</button>
       </form>
       <p id="applyResult" class="message"></p>

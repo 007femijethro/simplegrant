@@ -74,8 +74,26 @@ if (donateForm) {
 if (applyForm) {
   applyForm.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const payload = Object.fromEntries(new FormData(applyForm).entries());
-    payload.income = Number(payload.income || 0);
+    const formData = new FormData(applyForm);
+    const supportingDocs = formData.getAll('docs');
+
+    const payload = {
+      full_name: String(formData.get('full_name') || '').trim(),
+      email: String(formData.get('email') || '').trim(),
+      state: String(formData.get('state') || '').trim(),
+      income: Number(formData.get('income') || 0),
+      need_summary: [
+        `Purpose: ${String(formData.get('funding_purpose') || '').trim()}`,
+        `Personal statement: ${String(formData.get('personal_statement') || '').trim()}`,
+        `Budget breakdown: ${String(formData.get('budget_breakdown') || '').trim()}`,
+        `Expected outcomes: ${String(formData.get('impact_outcomes') || '').trim()}`,
+        `Financial hardship: ${String(formData.get('financial_hardship') || '').trim()}`,
+        `Profile: DOB ${String(formData.get('date_of_birth') || '').trim()}, Phone ${String(formData.get('phone_number') || '').trim()}, Address ${String(formData.get('address') || '').trim()}, Residency ${String(formData.get('residency_status') || '').trim()}, SSN(last4) ${String(formData.get('ssn_last4') || '').trim()}`,
+        `Eligibility: Enrolled=${String(formData.get('enrolled_in_school') || '').trim()}, Employed=${String(formData.get('employed') || '').trim()}, Income threshold=${String(formData.get('income_threshold') || '').trim()}, Underserved community=${String(formData.get('underserved_community') || '').trim()}`,
+        `Amount requested: ${String(formData.get('amount_requested') || '').trim()}`,
+        `Supporting documents: ${supportingDocs.length ? supportingDocs.join(', ') : 'None selected'}`,
+      ].filter((line) => !line.endsWith(': ')).join('\n'),
+    };
 
     const response = await fetch('/api/apply', {
       method: 'POST',
