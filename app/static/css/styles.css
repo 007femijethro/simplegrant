@@ -72,6 +72,9 @@ input, select, textarea { border: 1px solid var(--border); padding: 0.6rem; }
   padding: 1rem;
   z-index: 100;
 }
+.modal.hidden {
+  display: none;
+}
 .modal-card {
   background: #fff;
   border-radius: 12px;
@@ -80,6 +83,23 @@ input, select, textarea { border: 1px solid var(--border); padding: 0.6rem; }
   overflow: auto;
   padding: 1rem;
   position: relative;
+}
+
+.form-section {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.85rem;
+  background: #fcfdff;
+}
+
+.form-section h4 {
+  margin: 0 0 0.65rem;
+}
+
+.inline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.7rem;
 }
 .modal-close {
   position: absolute;
