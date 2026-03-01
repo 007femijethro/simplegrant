@@ -3,105 +3,99 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>US Grant Hub</title>
+    <title>SimpleGrant Foundation</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
   </head>
   <body>
     <header class="hero">
       <nav class="top-nav">
-        <h1>🇺🇸 US Grant Hub</h1>
+        <h1>🤝 SimpleGrant Foundation</h1>
         <button id="themeToggle" aria-label="Toggle theme">🌙</button>
       </nav>
       <div class="hero-content">
-        <h2>Find U.S. Grants Faster</h2>
-        <p>Search federal and state-friendly opportunities for nonprofits, businesses, schools, and local governments.</p>
+        <h2>Direct Financial Support for Individuals</h2>
+        <p>
+          We are a nonprofit organization that awards grants directly to people in need.
+          We do not sell leads or run a grant search marketplace.
+        </p>
       </div>
     </header>
 
     <main class="container">
       <section class="stats" id="stats"></section>
 
-      <section class="filters">
-        <input id="searchInput" type="text" placeholder="Search grants, agency, keywords..." />
-        <select id="categoryFilter">
-          <option value="all">All Categories</option>
-          <option value="Business">Business</option>
-          <option value="Community Development">Community Development</option>
-          <option value="Education">Education</option>
-          <option value="Energy">Energy</option>
-          <option value="Health">Health</option>
-          <option value="Infrastructure">Infrastructure</option>
-        </select>
-        <input id="stateFilter" type="text" maxlength="2" placeholder="State (e.g. TX)" />
-        <input id="minAward" type="range" min="0" max="500000" step="5000" value="0" />
-        <span id="minAwardLabel">$0 minimum</span>
-      </section>
-
       <section>
-        <h3>Grant Opportunities</h3>
+        <h3>Current Grant Programs</h3>
         <div id="grantsGrid" class="grants-grid"></div>
       </section>
 
       <section class="split">
         <div class="card">
           <h3>Eligibility Quick Check</h3>
+          <p>Answer a few questions to estimate whether you may qualify for one of our direct-aid programs.</p>
           <form id="eligibilityForm">
-            <label>Entity Type
+            <label>Applicant Type
               <select name="entity_type">
-                <option value="nonprofit">Nonprofit</option>
-                <option value="small_business">Small Business</option>
-                <option value="tribal">Tribal Organization</option>
+                <option value="individual">Individual</option>
+                <option value="caregiver">Caregiver / Parent</option>
+                <option value="student">Student</option>
                 <option value="other">Other</option>
               </select>
             </label>
-            <label>Project Stage
+            <label>Current Need Level
               <select name="project_stage">
-                <option value="ready">Ready to Launch</option>
-                <option value="pilot">Pilot</option>
-                <option value="idea">Idea Stage</option>
+                <option value="urgent">Urgent</option>
+                <option value="planned">Planned Expense</option>
+                <option value="general">General Support</option>
               </select>
             </label>
-            <label>Budget (USD)
-              <input name="budget" type="number" min="0" value="25000" />
+            <label>Requested Amount (USD)
+              <input name="budget" type="number" min="0" value="2500" />
             </label>
-            <label><input name="in_us" type="checkbox" checked /> U.S.-based project</label>
+            <label><input name="in_us" type="checkbox" checked /> I currently live in the United States</label>
             <button type="submit">Check Eligibility</button>
           </form>
           <p id="eligibilityResult"></p>
         </div>
 
         <div class="card">
-          <h3>Ask a Grant Advisor</h3>
+          <h3>Apply / Contact Our Team</h3>
+          <p>Submit your details and our nonprofit grants team will send you the official application steps.</p>
           <form id="contactForm">
-            <input type="text" name="name" placeholder="Name" required />
+            <input type="text" name="name" placeholder="Full Name" required />
             <input type="email" name="email" placeholder="Email" required />
-            <textarea name="message" rows="4" placeholder="Tell us what you need..." required></textarea>
-            <button type="submit">Send</button>
+            <textarea name="message" rows="4" placeholder="Tell us about your situation and grant need..." required></textarea>
+            <button type="submit">Submit Request</button>
           </form>
           <p id="contactResult"></p>
         </div>
       </section>
 
       <section class="card">
-        <h3>Saved Grants</h3>
-        <ul id="savedList"></ul>
+        <h3>How Our Grants Work</h3>
+        <ul class="info-list">
+          <li>1) Review our active programs below.</li>
+          <li>2) Complete the quick eligibility check.</li>
+          <li>3) Submit your request to receive full application instructions.</li>
+          <li>4) Our nonprofit board reviews applications and notifies recipients by email.</li>
+        </ul>
       </section>
 
       <section class="card">
         <h3>FAQ</h3>
         <details>
-          <summary>How often are grants updated?</summary>
-          <p>Our demo feed updates each request from local JSON, and can be connected to live APIs.</p>
+          <summary>Do you charge any fee to apply?</summary>
+          <p>No. We are a nonprofit organization and never charge application or processing fees.</p>
         </details>
         <details>
-          <summary>Can I track deadlines?</summary>
-          <p>Yes. Save grants and export deadlines into your planner manually from this MVP.</p>
+          <summary>Is this a grant search directory?</summary>
+          <p>No. This site is for our own direct grant programs for individuals.</p>
         </details>
       </section>
     </main>
 
     <footer>
-      <p>Built with Flask + JavaScript for grant seekers across the U.S.</p>
+      <p>SimpleGrant Foundation is a nonprofit organization supporting individuals across the U.S.</p>
     </footer>
 
     <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
