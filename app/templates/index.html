@@ -10,15 +10,22 @@
   <header class="topbar">
     <div class="container topbar-inner">
       <div class="brand">FMJ Organisation</div>
-      <nav class="topnav">
-        <a href="#mission">Mission</a>
-        <a href="#impact">Impact</a>
-        <a href="#programs">Programs</a>
-        <a href="#community-stories">Stories</a>
-        <a href="#get-involved">Get Involved</a>
-        <a href="/admin">Admin</a>
-      </nav>
-      <button class="btn btn-light" data-modal-open="donate-modal">Donate</button>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="topnav-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="topnav-shell" id="topnav-menu">
+        <nav class="topnav">
+          <a href="#mission">Mission</a>
+          <a href="#impact">Impact</a>
+          <a href="#programs">Programs</a>
+          <a href="#community-stories">Stories</a>
+          <a href="#get-involved">Get Involved</a>
+          <a href="/admin">Admin</a>
+        </nav>
+        <button class="btn btn-light" data-modal-open="donate-modal">Donate</button>
+      </div>
     </div>
   </header>
 
