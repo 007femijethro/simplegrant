@@ -2,36 +2,48 @@ const donateForm = document.querySelector('#donateForm');
 const applyForm = document.querySelector('#applyForm');
 const trackForm = document.querySelector('#trackForm');
 const adminForm = document.querySelector('#adminForm');
+const adminLoginForm = document.querySelector('#adminLoginForm');
+const adminLogoutBtn = document.querySelector('#adminLogoutBtn');
 
 const donateResult = document.querySelector('#donateResult');
 const applyResult = document.querySelector('#applyResult');
 const trackResult = document.querySelector('#trackResult');
 const adminResult = document.querySelector('#adminResult');
+const adminLoginResult = document.querySelector('#adminLoginResult');
 
-const tabButtons = document.querySelectorAll('.tab-button');
-const tabPanels = document.querySelectorAll('.tab-panel');
-const tabTriggerButtons = document.querySelectorAll('[data-tab-target]');
+const modalOpenButtons = document.querySelectorAll('[data-modal-open]');
+const modalCloseButtons = document.querySelectorAll('[data-modal-close]');
+const modals = document.querySelectorAll('.modal');
 
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
-function activateTab(tabId) {
-  tabButtons.forEach((button) => {
-    const isActive = button.dataset.tab === tabId;
-    button.classList.toggle('active', isActive);
-    button.setAttribute('aria-selected', String(isActive));
-  });
-
-  tabPanels.forEach((panel) => {
-    panel.classList.toggle('active', panel.id === tabId);
-  });
+function openModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.remove('hidden');
+    document.body.classList.add('modal-open');
+  }
 }
 
-tabButtons.forEach((button) => {
-  button.addEventListener('click', () => activateTab(button.dataset.tab));
+function closeModals() {
+  modals.forEach((modal) => modal.classList.add('hidden'));
+  document.body.classList.remove('modal-open');
+}
+
+modalOpenButtons.forEach((button) => {
+  button.addEventListener('click', () => openModal(button.dataset.modalOpen));
 });
 
-tabTriggerButtons.forEach((button) => {
-  button.addEventListener('click', () => activateTab(button.dataset.tabTarget));
+modalCloseButtons.forEach((button) => {
+  button.addEventListener('click', closeModals);
+});
+
+modals.forEach((modal) => {
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) {
+      closeModals();
+    }
+  });
 });
 
 if (donateForm) {
@@ -81,7 +93,6 @@ if (applyForm) {
     applyResult.innerHTML = `Application submitted. Your ID is <strong>${data.application_id}</strong>. Keep it safe.`;
     applyResult.className = 'message success';
     applyForm.reset();
-    activateTab('monitor-tab');
   });
 }
 
@@ -116,6 +127,28 @@ if (trackForm) {
   });
 }
 
+if (adminLoginForm) {
+  adminLoginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const payload = Object.fromEntries(new FormData(adminLoginForm).entries());
+
+    const response = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      adminLoginResult.textContent = data.error || 'Login failed.';
+      adminLoginResult.className = 'message error';
+      return;
+    }
+
+    window.location.href = '/admin';
+  });
+}
+
 if (adminForm) {
   adminForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -138,5 +171,12 @@ if (adminForm) {
 
     adminResult.textContent = `Updated ${data.application.application_id} successfully.`;
     adminResult.className = 'message success';
+  });
+}
+
+if (adminLogoutBtn) {
+  adminLogoutBtn.addEventListener('click', async () => {
+    await fetch('/api/admin/logout', { method: 'POST' });
+    window.location.href = '/admin';
   });
 }

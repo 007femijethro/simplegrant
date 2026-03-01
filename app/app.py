@@ -1,25 +1,104 @@
 from __future__ import annotations
 
-import json
+import os
 import uuid
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, session
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import String, Text
+from sqlalchemy.orm import Mapped, mapped_column
 
-BASE_DIR = Path(__file__).resolve().parent
-APPLICATIONS_FILE = BASE_DIR / "data" / "applications.json"
-DONATIONS_FILE = BASE_DIR / "data" / "donations.json"
-ADMIN_KEY = "FMJ-ADMIN"
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://postgres.qxchnkfmauykcywyhwwt:Omodara4wife$@aws-1-eu-west-1.pooler.supabase.com:5432/postgres",
+)
+
+
+db = SQLAlchemy()
+
+
+class GApplicant(db.Model):
+    __tablename__ = "g_applicants"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    application_id: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
+    full_name: Mapped[str] = mapped_column(String(160), nullable=False)
+    email: Mapped[str] = mapped_column(String(160), nullable=False, index=True)
+    state: Mapped[str] = mapped_column(String(100), nullable=False)
+    income: Mapped[int] = mapped_column(nullable=False)
+    need_summary: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(String(40), nullable=False, default="Submitted")
+    qualified_amount: Mapped[int] = mapped_column(nullable=False, default=0)
+    approved_amount: Mapped[int] = mapped_column(nullable=False, default=0)
+    admin_note: Mapped[str] = mapped_column(Text, nullable=False, default="Your application has been submitted and is waiting for review.")
+    created_at: Mapped[datetime] = mapped_column(nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(nullable=False)
+
+
+class GDonation(db.Model):
+    __tablename__ = "g_donations"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    donation_id: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
+    donor_name: Mapped[str] = mapped_column(String(160), nullable=False)
+    email: Mapped[str] = mapped_column(String(160), nullable=False, index=True)
+    amount: Mapped[float] = mapped_column(nullable=False)
+    donation_type: Mapped[str] = mapped_column(String(80), nullable=False)
+    note: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(nullable=False)
+
+
+class GAdminUser(db.Model):
+    __tablename__ = "g_admin_users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String(120), nullable=False)
+
 
 
 def create_app() -> Flask:
     app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "simplegrant-secret")
+
+    db.init_app(app)
+
+    with app.app_context():
+        db.create_all()
+        _seed_admin_user()
 
     @app.get("/")
     def index() -> str:
         return render_template("index.html")
+
+    @app.get("/admin")
+    def admin_page() -> str:
+        if not session.get("admin_authenticated"):
+            return render_template("admin_login.html")
+        return render_template("admin_dashboard.html")
+
+    @app.post("/api/admin/login")
+    def admin_login() -> Any:
+        payload = request.get_json(silent=True) or {}
+        username = str(payload.get("username", "")).strip()
+        password = str(payload.get("password", "")).strip()
+
+        admin_user = GAdminUser.query.filter_by(username=username).first()
+        if not admin_user or admin_user.password != password:
+            return jsonify({"ok": False, "error": "Invalid admin credentials."}), 401
+
+        session["admin_authenticated"] = True
+        session["admin_username"] = admin_user.username
+        return jsonify({"ok": True, "message": "Logged in successfully."})
+
+    @app.post("/api/admin/logout")
+    def admin_logout() -> Any:
+        session.clear()
+        return jsonify({"ok": True})
 
     @app.post("/api/apply")
     def apply_for_grant() -> Any:
@@ -29,26 +108,24 @@ def create_app() -> Flask:
         if missing:
             return jsonify({"ok": False, "error": f"Missing fields: {', '.join(missing)}"}), 400
 
+        now = datetime.now(timezone.utc)
         application_id = f"FMJ-{uuid.uuid4().hex[:8].upper()}"
-        now_iso = datetime.now(timezone.utc).isoformat()
-        record = {
-            "application_id": application_id,
-            "full_name": str(payload["full_name"]).strip(),
-            "email": str(payload["email"]).strip().lower(),
-            "state": str(payload["state"]).strip(),
-            "income": int(payload["income"]),
-            "need_summary": str(payload["need_summary"]).strip(),
-            "status": "Submitted",
-            "qualified_amount": 0,
-            "approved_amount": 0,
-            "admin_note": "Your application has been submitted and is waiting for review.",
-            "created_at": now_iso,
-            "updated_at": now_iso,
-        }
-
-        applications = _load_json_array(APPLICATIONS_FILE)
-        applications.append(record)
-        _save_json_array(APPLICATIONS_FILE, applications)
+        record = GApplicant(
+            application_id=application_id,
+            full_name=str(payload["full_name"]).strip(),
+            email=str(payload["email"]).strip().lower(),
+            state=str(payload["state"]).strip(),
+            income=int(payload["income"]),
+            need_summary=str(payload["need_summary"]).strip(),
+            status="Submitted",
+            qualified_amount=0,
+            approved_amount=0,
+            admin_note="Your application has been submitted and is waiting for review.",
+            created_at=now,
+            updated_at=now,
+        )
+        db.session.add(record)
+        db.session.commit()
         return jsonify({"ok": True, "application_id": application_id, "message": "Application submitted successfully."})
 
     @app.post("/api/donate")
@@ -63,21 +140,18 @@ def create_app() -> Flask:
         if amount <= 0:
             return jsonify({"ok": False, "error": "Donation amount must be greater than zero."}), 400
 
-        donation_id = f"DON-{uuid.uuid4().hex[:8].upper()}"
-        now_iso = datetime.now(timezone.utc).isoformat()
-        donation = {
-            "donation_id": donation_id,
-            "donor_name": str(payload["donor_name"]).strip(),
-            "email": str(payload["email"]).strip().lower(),
-            "amount": amount,
-            "donation_type": str(payload["donation_type"]).strip(),
-            "note": str(payload.get("note", "")).strip(),
-            "created_at": now_iso,
-        }
-        donations = _load_json_array(DONATIONS_FILE)
-        donations.append(donation)
-        _save_json_array(DONATIONS_FILE, donations)
-        return jsonify({"ok": True, "donation_id": donation_id, "message": "Thank you for your donation."})
+        donation = GDonation(
+            donation_id=f"DON-{uuid.uuid4().hex[:8].upper()}",
+            donor_name=str(payload["donor_name"]).strip(),
+            email=str(payload["email"]).strip().lower(),
+            amount=amount,
+            donation_type=str(payload["donation_type"]).strip(),
+            note=str(payload.get("note", "")).strip(),
+            created_at=datetime.now(timezone.utc),
+        )
+        db.session.add(donation)
+        db.session.commit()
+        return jsonify({"ok": True, "donation_id": donation.donation_id, "message": "Thank you for your donation."})
 
     @app.get("/api/application/<application_id>")
     def check_application(application_id: str) -> Any:
@@ -85,56 +159,58 @@ def create_app() -> Flask:
         if not email:
             return jsonify({"ok": False, "error": "Email is required."}), 400
 
-        application = _find_application(application_id)
-        if not application or application["email"] != email:
+        application = GApplicant.query.filter_by(application_id=application_id.strip().upper(), email=email).first()
+        if not application:
             return jsonify({"ok": False, "error": "Application not found."}), 404
-        return jsonify({"ok": True, "application": application})
+        return jsonify({"ok": True, "application": _serialize_application(application)})
 
     @app.post("/api/admin/update")
     def admin_update() -> Any:
-        payload = request.get_json(silent=True) or {}
-        if payload.get("admin_key") != ADMIN_KEY:
+        if not session.get("admin_authenticated"):
             return jsonify({"ok": False, "error": "Unauthorized."}), 401
 
+        payload = request.get_json(silent=True) or {}
         application_id = str(payload.get("application_id", "")).strip().upper()
-        applications = _load_json_array(APPLICATIONS_FILE)
-        application = next((a for a in applications if a.get("application_id", "").upper() == application_id), None)
+        application = GApplicant.query.filter_by(application_id=application_id).first()
         if not application:
             return jsonify({"ok": False, "error": "Application not found."}), 404
 
         for field in ["status", "admin_note"]:
             if field in payload:
-                application[field] = str(payload[field]).strip()
+                setattr(application, field, str(payload[field]).strip())
         for field in ["qualified_amount", "approved_amount"]:
             if field in payload and payload[field] is not None:
-                application[field] = max(0, int(payload[field]))
+                setattr(application, field, max(0, int(payload[field])))
 
-        application["updated_at"] = datetime.now(timezone.utc).isoformat()
-        _save_json_array(APPLICATIONS_FILE, applications)
-        return jsonify({"ok": True, "application": application})
+        application.updated_at = datetime.now(timezone.utc)
+        db.session.commit()
+        return jsonify({"ok": True, "application": _serialize_application(application)})
 
     return app
 
 
-def _load_json_array(file_path: Path) -> list[dict[str, Any]]:
-    if not file_path.exists():
-        return []
-    with file_path.open("r", encoding="utf-8") as file:
-        return json.load(file)
+def _serialize_application(application: GApplicant) -> dict[str, Any]:
+    return {
+        "application_id": application.application_id,
+        "full_name": application.full_name,
+        "email": application.email,
+        "state": application.state,
+        "income": application.income,
+        "need_summary": application.need_summary,
+        "status": application.status,
+        "qualified_amount": application.qualified_amount,
+        "approved_amount": application.approved_amount,
+        "admin_note": application.admin_note,
+        "created_at": application.created_at.isoformat(),
+        "updated_at": application.updated_at.isoformat(),
+    }
 
 
-def _save_json_array(file_path: Path, rows: list[dict[str, Any]]) -> None:
-    file_path.parent.mkdir(parents=True, exist_ok=True)
-    with file_path.open("w", encoding="utf-8") as file:
-        json.dump(rows, file, indent=2)
-
-
-def _find_application(application_id: str) -> dict[str, Any] | None:
-    application_id = application_id.strip().upper()
-    for application in _load_json_array(APPLICATIONS_FILE):
-        if application.get("application_id", "").upper() == application_id:
-            return application
-    return None
+def _seed_admin_user() -> None:
+    admin = GAdminUser.query.filter_by(username="admin").first()
+    if not admin:
+        db.session.add(GAdminUser(username="admin", password="Jethro01"))
+        db.session.commit()
 
 
 if __name__ == "__main__":

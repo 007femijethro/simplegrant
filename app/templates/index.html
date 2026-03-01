@@ -15,8 +15,9 @@
         <a href="#impact">Impact</a>
         <a href="#programs">Programs</a>
         <a href="#get-involved">Get Involved</a>
+        <a href="/admin">Admin</a>
       </nav>
-      <button class="btn btn-light" data-tab-target="donate-tab">Donate</button>
+      <button class="btn btn-light" data-modal-open="donate-modal">Donate</button>
     </div>
   </header>
 
@@ -27,8 +28,8 @@
         <h1>Building stronger communities through direct support and opportunity.</h1>
         <p>FMJ Organisation connects families to urgent relief, education support, housing stability resources, and grant opportunities to help people thrive.</p>
         <div class="hero-actions">
-          <button class="btn" data-tab-target="apply-tab">Apply for Grant</button>
-          <button class="btn btn-outline" data-tab-target="donate-tab">Donate Today</button>
+          <button class="btn" data-modal-open="apply-modal">Apply for Grant</button>
+          <button class="btn btn-outline" data-modal-open="donate-modal">Donate Today</button>
         </div>
       </div>
       <div class="hero-card">
@@ -51,7 +52,7 @@
     <section id="impact" class="section cards-3">
       <article class="card"><h3>Financial Stability</h3><p>Emergency grants, utility support, and household recovery assistance.</p></article>
       <article class="card"><h3>Education Access</h3><p>Student grants, caregiver support, and youth enrichment pathways.</p></article>
-      <article class="card"><h3>Health & Wellbeing</h3><p>Critical medical needs and wellness-based aid coordination.</p></article>
+      <article class="card"><h3>Health &amp; Wellbeing</h3><p>Critical medical needs and wellness-based aid coordination.</p></article>
     </section>
 
     <section id="programs" class="section">
@@ -64,84 +65,53 @@
     </section>
 
     <section id="get-involved" class="section">
-      <h2>Take Action</h2>
-      <p>Use the tabs below to donate, apply for grant support, monitor your application, or update reviews as an admin in this simulation portal.</p>
-    </section>
-
-    <section class="section tabs-section">
-      <div class="tabs" role="tablist" aria-label="FMJ actions">
-        <button id="donate-tab-btn" class="tab-button active" data-tab="donate-tab" role="tab" aria-selected="true">Donate</button>
-        <button id="apply-tab-btn" class="tab-button" data-tab="apply-tab" role="tab" aria-selected="false">Apply for Grant</button>
-        <button id="monitor-tab-btn" class="tab-button" data-tab="monitor-tab" role="tab" aria-selected="false">Monitor Application</button>
-        <button id="admin-tab-btn" class="tab-button" data-tab="admin-tab" role="tab" aria-selected="false">Admin Review</button>
-      </div>
-
-      <div id="donate-tab" class="tab-panel active" role="tabpanel" aria-labelledby="donate-tab-btn">
-        <h3>Support FMJ Organisation</h3>
-        <form id="donateForm" class="stack form-narrow">
-          <label>Donor Name <input name="donor_name" required></label>
-          <label>Email <input name="email" type="email" required></label>
-          <label>Donation Amount (USD) <input name="amount" type="number" min="1" required></label>
-          <label>Donation Type
-            <select name="donation_type" required>
-              <option value="One-time">One-time</option>
-              <option value="Monthly">Monthly</option>
-              <option value="Emergency Appeal">Emergency Appeal</option>
-            </select>
-          </label>
-          <label>Message (optional) <textarea name="note" rows="3"></textarea></label>
-          <button type="submit" class="btn">Donate Securely</button>
-        </form>
-        <p id="donateResult" class="message"></p>
-      </div>
-
-      <div id="apply-tab" class="tab-panel" role="tabpanel" aria-labelledby="apply-tab-btn">
-        <h3>Apply for Grant</h3>
-        <form id="applyForm" class="stack form-narrow">
-          <label>Full Name <input name="full_name" required></label>
-          <label>Email <input name="email" type="email" required></label>
-          <label>State <input name="state" required placeholder="e.g. Texas"></label>
-          <label>Annual Income (USD) <input name="income" type="number" min="0" required></label>
-          <label>Need Summary <textarea name="need_summary" rows="4" required></textarea></label>
-          <button type="submit" class="btn">Submit Application</button>
-        </form>
-        <p id="applyResult" class="message"></p>
-      </div>
-
-      <div id="monitor-tab" class="tab-panel" role="tabpanel" aria-labelledby="monitor-tab-btn">
-        <h3>Monitor Application</h3>
-        <form id="trackForm" class="stack form-narrow">
-          <label>Application ID <input name="application_id" required placeholder="FMJ-XXXXXXXX"></label>
-          <label>Email <input name="email" type="email" required></label>
-          <button type="submit" class="btn">Check Status</button>
-        </form>
-        <div id="trackResult" class="panel hidden"></div>
-      </div>
-
-      <div id="admin-tab" class="tab-panel" role="tabpanel" aria-labelledby="admin-tab-btn">
-        <h3>Admin Review (Simulation)</h3>
-        <p class="help">Use admin key: <code>FMJ-ADMIN</code></p>
-        <form id="adminForm" class="stack form-narrow">
-          <label>Admin Key <input name="admin_key" required></label>
-          <label>Application ID <input name="application_id" required></label>
-          <label>Status
-            <select name="status">
-              <option>Submitted</option>
-              <option>Under Review</option>
-              <option>Approved</option>
-              <option>Denied</option>
-              <option>Needs More Info</option>
-            </select>
-          </label>
-          <label>Qualified Amount (USD) <input name="qualified_amount" type="number" min="0" value="0"></label>
-          <label>Approved Amount (USD) <input name="approved_amount" type="number" min="0" value="0"></label>
-          <label>Admin Note <textarea name="admin_note" rows="3"></textarea></label>
-          <button type="submit" class="btn">Update Application</button>
-        </form>
-        <p id="adminResult" class="message"></p>
-      </div>
+      <h2>Monitor Application</h2>
+      <form id="trackForm" class="stack form-narrow">
+        <label>Application ID <input name="application_id" required placeholder="FMJ-XXXXXXXX"></label>
+        <label>Email <input name="email" type="email" required></label>
+        <button type="submit" class="btn">Check Status</button>
+      </form>
+      <div id="trackResult" class="panel hidden"></div>
     </section>
   </main>
+
+  <div id="donate-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="donate-title">
+    <div class="modal-card">
+      <button class="modal-close" data-modal-close>&times;</button>
+      <h3 id="donate-title">Support FMJ Organisation</h3>
+      <form id="donateForm" class="stack form-narrow">
+        <label>Donor Name <input name="donor_name" required></label>
+        <label>Email <input name="email" type="email" required></label>
+        <label>Donation Amount (USD) <input name="amount" type="number" min="1" required></label>
+        <label>Donation Type
+          <select name="donation_type" required>
+            <option value="One-time">One-time</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Emergency Appeal">Emergency Appeal</option>
+          </select>
+        </label>
+        <label>Message (optional) <textarea name="note" rows="3"></textarea></label>
+        <button type="submit" class="btn">Donate Securely</button>
+      </form>
+      <p id="donateResult" class="message"></p>
+    </div>
+  </div>
+
+  <div id="apply-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="apply-title">
+    <div class="modal-card">
+      <button class="modal-close" data-modal-close>&times;</button>
+      <h3 id="apply-title">Apply for Grant</h3>
+      <form id="applyForm" class="stack form-narrow">
+        <label>Full Name <input name="full_name" required></label>
+        <label>Email <input name="email" type="email" required></label>
+        <label>State <input name="state" required placeholder="e.g. Texas"></label>
+        <label>Annual Income (USD) <input name="income" type="number" min="0" required></label>
+        <label>Need Summary <textarea name="need_summary" rows="4" required></textarea></label>
+        <button type="submit" class="btn">Submit Application</button>
+      </form>
+      <p id="applyResult" class="message"></p>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="container footer-inner">
