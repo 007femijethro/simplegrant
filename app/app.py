@@ -10,13 +10,18 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://postgres.qxchnkfmauykcywyhwwt:Omodara4wife$@aws-1-eu-west-1.pooler.supabase.com:5432/postgres",
-)
+DEFAULT_DATABASE_URL = "postgresql://postgres.qxchnkfmauykcywyhwwt:Omodara4wife$@aws-1-eu-west-1.pooler.supabase.com:5432/postgres"
 
 
 db = SQLAlchemy()
+
+
+def _normalize_database_url(database_url: str) -> str:
+    if database_url.startswith("postgres://"):
+        return database_url.replace("postgres://", "postgresql+psycopg://", 1)
+    if database_url.startswith("postgresql://") and "+" not in database_url.split("://", 1)[0]:
+        return database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+    return database_url
 
 
 class GApplicant(db.Model):
@@ -61,7 +66,8 @@ class GAdminUser(db.Model):
 
 def create_app() -> Flask:
     app = Flask(__name__)
-    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+    database_url = os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
+    app.config["SQLALCHEMY_DATABASE_URI"] = _normalize_database_url(database_url)
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "simplegrant-secret")
 

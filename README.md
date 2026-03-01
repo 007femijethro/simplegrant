@@ -3,11 +3,13 @@
 A Flask-based portal for donations and grant applications with PostgreSQL persistence.
 
 ## Configuration
-Set the database connection string with `DATABASE_URL`:
+Set the database connection string with `DATABASE_URL` (recommended with the psycopg driver prefix):
 
 ```bash
-export DATABASE_URL='postgresql://postgres.qxchnkfmauykcywyhwwt:Omodara4wife$@aws-1-eu-west-1.pooler.supabase.com:5432/postgres'
+export DATABASE_URL='postgresql+psycopg://postgres.qxchnkfmauykcywyhwwt:Omodara4wife$@aws-1-eu-west-1.pooler.supabase.com:5432/postgres'
 ```
+
+The app also accepts `postgres://` and `postgresql://` URLs and normalizes them to `postgresql+psycopg://` automatically.
 
 The app auto-creates these tables on startup (all `g_` prefixed):
 - `g_applicants`
