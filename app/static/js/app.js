@@ -15,6 +15,11 @@ const modalOpenButtons = document.querySelectorAll('[data-modal-open]');
 const modalCloseButtons = document.querySelectorAll('[data-modal-close]');
 const modals = document.querySelectorAll('.modal');
 
+const storyCards = document.querySelectorAll('.story-card');
+const storyDots = document.querySelectorAll('.story-dot');
+const heroSection = document.querySelector('.hero');
+const countUpElements = document.querySelectorAll('.count-up');
+
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
 function openModal(modalId) {
@@ -45,6 +50,73 @@ modals.forEach((modal) => {
     }
   });
 });
+
+function animateCounters() {
+  if (!countUpElements.length) {
+    return;
+  }
+
+  countUpElements.forEach((element) => {
+    const target = Number(element.dataset.target || 0);
+    const suffix = element.dataset.suffix || '';
+    const hasThousands = target >= 1000;
+    let current = 0;
+    const increment = Math.max(1, Math.round(target / 70));
+
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        current = target;
+      }
+
+      const formatted = hasThousands ? current.toLocaleString('en-US') : String(current);
+      element.textContent = `${formatted}${suffix}`;
+
+      if (current === target) {
+        clearInterval(timer);
+      }
+    }, 20);
+  });
+}
+
+function setActiveStory(index) {
+  storyCards.forEach((card) => {
+    card.classList.toggle('active', card.dataset.story === String(index));
+  });
+
+  storyDots.forEach((dot) => {
+    dot.classList.toggle('active', dot.dataset.storyTarget === String(index));
+  });
+
+  if (heroSection) {
+    const heroGradients = [
+      'linear-gradient(135deg, #0a2f7d, #0e53cf)',
+      'linear-gradient(135deg, #0d4fcc, #1a7ce6)',
+      'linear-gradient(135deg, #093a96, #138d75)',
+    ];
+    heroSection.style.background = heroGradients[index % heroGradients.length];
+  }
+}
+
+function initializeStoryCarousel() {
+  if (!storyCards.length || !storyDots.length) {
+    return;
+  }
+
+  let currentStory = 0;
+
+  storyDots.forEach((dot) => {
+    dot.addEventListener('click', () => {
+      currentStory = Number(dot.dataset.storyTarget || 0);
+      setActiveStory(currentStory);
+    });
+  });
+
+  setInterval(() => {
+    currentStory = (currentStory + 1) % storyCards.length;
+    setActiveStory(currentStory);
+  }, 5000);
+}
 
 if (donateForm) {
   donateForm.addEventListener('submit', async (event) => {
@@ -198,3 +270,6 @@ if (adminLogoutBtn) {
     window.location.href = '/admin';
   });
 }
+
+animateCounters();
+initializeStoryCarousel();

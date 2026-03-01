@@ -14,7 +14,7 @@
         <a href="#mission">Mission</a>
         <a href="#impact">Impact</a>
         <a href="#programs">Programs</a>
-        <a href="#community-partners">Partners</a>
+        <a href="#community-stories">Stories</a>
         <a href="#get-involved">Get Involved</a>
         <a href="/admin">Admin</a>
       </nav>
@@ -36,9 +36,9 @@
       <div class="hero-card">
         <h3>Community Snapshot</h3>
         <ul>
-          <li><strong>12,000+</strong> households served in simulation metrics</li>
-          <li><strong>48 states</strong> represented by support requests</li>
-          <li><strong>94%</strong> of approved aid delivered in under 7 days</li>
+          <li><strong class="count-up" data-target="12000">0</strong> households served in simulation metrics</li>
+          <li><strong class="count-up" data-target="48">0</strong> states represented by support requests</li>
+          <li><strong class="count-up" data-target="94" data-suffix="%">0%</strong> of approved aid delivered in under 7 days</li>
         </ul>
       </div>
     </div>
@@ -65,23 +65,28 @@
       </div>
     </section>
 
-    <section id="community-partners" class="section spotlight">
-      <div class="spotlight-copy">
-        <h2>Community Leadership Spotlight</h2>
-        <p>
-          We continue learning from nationwide organizations like
-          <a href="https://www.unitedway.org/" target="_blank" rel="noopener noreferrer">United Way</a>,
-          whose mission is to improve lives by mobilizing the caring power of communities around the world.
-        </p>
-        <p>
-          United Way's focus on youth opportunity, healthy community, financial security, and community resilience
-          reflects the same values we apply in every grant cycle and local support program.
-        </p>
+    <section id="community-stories" class="section">
+      <h2>Community Stories</h2>
+      <p class="section-lead">Real moments from community support events, volunteer outreach, and family resource days.</p>
+      <div class="story-gallery">
+        <figure class="story-card card active" data-story="0">
+          <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=80" alt="Volunteers handing out food boxes in a community event">
+          <figcaption>Volunteer day distribution with local partners.</figcaption>
+        </figure>
+        <figure class="story-card card" data-story="1">
+          <img src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=1200&q=80" alt="Mentor helping a student with school materials">
+          <figcaption>Education support and mentorship in action.</figcaption>
+        </figure>
+        <figure class="story-card card" data-story="2">
+          <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=1200&q=80" alt="Community wellness clinic consultation">
+          <figcaption>Health and wellness outreach for families.</figcaption>
+        </figure>
       </div>
-      <figure class="spotlight-image card">
-        <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google logo">
-        <figcaption>Visual inspiration powered by Google imagery for a more engaging community portal.</figcaption>
-      </figure>
+      <div class="story-controls" role="tablist" aria-label="Community story selector">
+        <button class="story-dot active" type="button" data-story-target="0" aria-label="Show story 1"></button>
+        <button class="story-dot" type="button" data-story-target="1" aria-label="Show story 2"></button>
+        <button class="story-dot" type="button" data-story-target="2" aria-label="Show story 3"></button>
+      </div>
     </section>
 
     <section id="get-involved" class="section">
