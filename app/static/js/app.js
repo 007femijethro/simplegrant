@@ -13,6 +13,7 @@ const adminResult = document.querySelector('#adminResult');
 const adminLoginResult = document.querySelector('#adminLoginResult');
 const testimonialResult = document.querySelector('#testimonialResult');
 const testimonialAdminList = document.querySelector('#testimonialAdminList');
+const testimonialList = document.querySelector('#testimonialList');
 
 const modalOpenButtons = document.querySelectorAll('[data-modal-open]');
 const modalCloseButtons = document.querySelectorAll('[data-modal-close]');
@@ -28,6 +29,97 @@ const topnavShell = document.querySelector('.topnav-shell');
 
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 let testimonialCache = [];
+
+
+function renderTestimonials(list) {
+  if (!testimonialList) {
+    return;
+  }
+
+  if (!Array.isArray(list) || !list.length) {
+    testimonialList.innerHTML = '<article class="card"><p>No featured testimonials available right now.</p></article>';
+    return;
+  }
+
+  testimonialList.innerHTML = list.map((testimonial) => `
+    <article class="card">
+      <p>“${testimonial.quote}”</p>
+      <p><strong>${testimonial.full_name}</strong></p>
+      <p>${testimonial.role_title} · ${testimonial.location}</p>
+    </article>
+  `).join('');
+}
+
+async function loadTestimonials() {
+  if (!testimonialList) {
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/testimonials');
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || 'Unable to load testimonials.');
+    }
+
+    renderTestimonials(data.testimonials || []);
+  } catch (error) {
+    testimonialList.innerHTML = '<article class="card"><p>Unable to load testimonials right now.</p></article>';
+  }
+}
+
+async function loadAdminTestimonials() {
+  if (!testimonialAdminList) {
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/admin/testimonials');
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      testimonialAdminList.innerHTML = `<p class="error">${data.error || 'Unable to load testimonials.'}</p>`;
+      return;
+    }
+
+    testimonialCache = data.testimonials || [];
+
+    if (!testimonialCache.length) {
+      testimonialAdminList.innerHTML = '<p>No testimonials yet.</p>';
+      return;
+    }
+
+    testimonialAdminList.innerHTML = testimonialCache.map((testimonial) => `
+      <article class="card" data-testimonial-id="${testimonial.id}">
+        <p>“${testimonial.quote}”</p>
+        <p><strong>${testimonial.full_name}</strong> — ${testimonial.role_title}</p>
+        <p>${testimonial.location}</p>
+        <p><strong>Homepage:</strong> ${testimonial.is_featured ? 'Yes' : 'No'}</p>
+        <button type="button" class="btn btn-light" data-edit-testimonial="${testimonial.id}">Edit</button>
+      </article>
+    `).join('');
+
+    testimonialAdminList.querySelectorAll('[data-edit-testimonial]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const id = Number(button.dataset.editTestimonial);
+        const testimonial = testimonialCache.find((item) => item.id === id);
+        if (!testimonial || !testimonialForm) {
+          return;
+        }
+
+        testimonialForm.elements.id.value = testimonial.id;
+        testimonialForm.elements.full_name.value = testimonial.full_name;
+        testimonialForm.elements.role_title.value = testimonial.role_title;
+        testimonialForm.elements.location.value = testimonial.location;
+        testimonialForm.elements.quote.value = testimonial.quote;
+        testimonialForm.elements.is_featured.checked = Boolean(testimonial.is_featured);
+      });
+    });
+  } catch (error) {
+    testimonialAdminList.innerHTML = '<p class="error">Unable to load testimonials.</p>';
+  }
+}
 
 function openModal(modalId) {
   const modal = document.getElementById(modalId);
@@ -370,3 +462,4 @@ initializeTopnav();
 setActiveStory(0);
 initializeHeroBackground();
 initializeStoryCarousel();
+loadTestimonials();
